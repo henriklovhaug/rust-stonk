@@ -1,2 +1,3 @@
 rust-stonk/target/
 rust-stonk/Cargo.lock
+rust-stonk/stonks.json

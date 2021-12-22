@@ -3,6 +3,8 @@ use std::io::Write;
 
 use yahoo_finance_api::Quote;
 
+use crate::Stonk;
+
 
 pub fn save_stonk(stonks: Vec<Quote>, name_of_stonk: &str) -> bool {
     let mut json_string: String = String::new();
@@ -14,6 +16,14 @@ pub fn save_stonk(stonks: Vec<Quote>, name_of_stonk: &str) -> bool {
     let mut file = File::create("stonks.json").unwrap();
     file.write_all(json_string.as_bytes()).unwrap();
     true
+}
+
+pub fn super_save_stonk(stonk: Vec<Stonk>) {
+    let mut json_string = serde_json::to_string(&stonk).unwrap();
+    json_string.push_str("\n");
+    let mut file = File::create("stonks.json").unwrap();
+    file.write_all(json_string.as_bytes()).unwrap();
+    
 }
 
 pub fn create_file() -> bool {

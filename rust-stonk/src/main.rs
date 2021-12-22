@@ -43,6 +43,7 @@ impl From<&Quote> for Stonk {
         }
     }
 }
+
 #[tokio::main]
 async fn main() {
     let provider = yahoo::YahooConnector::new();
@@ -58,7 +59,8 @@ async fn main() {
         let time = DateTime::<Utc>::from(UNIX_EPOCH + Duration::from_secs(quote.timestamp));
         println!("Tesla stonk: {:?} {}", quote, time);
     }
-    let stonk = Stonk::from(&quotes[0]);
+    let stonk: Vec<Stonk> =
+        quotes.iter().map(|quote| Stonk::from(quote)).collect();
     stonksaver::create_file();
-    stonksaver::save_stonk(quotes, "Tesla");
+    stonksaver::super_save_stonk(stonk);
 }
