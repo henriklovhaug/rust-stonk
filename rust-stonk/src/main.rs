@@ -1,13 +1,13 @@
-use std::time::{UNIX_EPOCH, Duration};
+use chrono::{DateTime, TimeZone, Utc};
+use files::stonksaver;
+use std::time::{Duration, UNIX_EPOCH};
+use tokio;
 use yahoo::Quote;
 use yahoo_finance_api as yahoo;
-use chrono::{Utc,TimeZone, DateTime};
-use tokio;
-use files::stonksaver;
 mod files;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Stonk {
     pub timestamp: u64,
     pub open: f64,
@@ -50,17 +50,22 @@ async fn main() {
     let start = Utc.ymd(2020, 1, 1).and_hms_milli(0, 0, 0, 0);
     let end = Utc.ymd(2020, 1, 31).and_hms_milli(23, 59, 59, 999);
     // returns historic quotes with daily interval
-    let resp = provider.get_quote_history("TSLA", start, end).await.unwrap();
+    let resp = provider
+        .get_quote_history("TSLA", start, end)
+        .await
+        .unwrap();
     let quotes = resp.quotes().unwrap();
-    // println!("Apple's quotes in January: {:?}", quotes);
-    // let max_price_1 = quotes[0].high;
-    // println!("Max price in January: {}", max_price_1);
-    for quote in &quotes {
-        let time = DateTime::<Utc>::from(UNIX_EPOCH + Duration::from_secs(quote.timestamp));
-        println!("Tesla stonk: {:?} {}", quote, time);
+    let stonk: Vec<Stonk> = quotes.iter().map(|quote| Stonk::from(quote)).collect();
+    stonk_printer(&stonk, "TSLA");
+    stonksaver::save_stonk(stonk);
+}
+
+fn stonk_printer(stonks: &Vec<Stonk>, stonk_name: &str) {
+    for stonk in stonks {
+        //let time = DateTime::<Utc>::from(UNIX_EPOCH + Duration::from_secs(stonk.timestamp));
+        println!("{}:", stonk_name);
+        println!("\t Opening price: {} \n
+                  \t Dayly high: {} \n
+                  ", stonk.open, stonk.high);
     }
-    let stonk: Vec<Stonk> =
-        quotes.iter().map(|quote| Stonk::from(quote)).collect();
-    stonksaver::create_file();
-    stonksaver::super_save_stonk(stonk);
 }
