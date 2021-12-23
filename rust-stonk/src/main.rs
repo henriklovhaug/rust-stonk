@@ -3,9 +3,9 @@ use files::stonksaver;
 use std::time::{Duration, UNIX_EPOCH};
 use tokio;
 use yahoo_finance_api as yahoo;
-mod files;
 mod database;
-use database::database::{save_to_database, get_stonk_from_database};
+mod files;
+use database::database::{get_stonk_from_database, save_to_database};
 
 mod datatypes;
 use datatypes::stonk::Stonk;

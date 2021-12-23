@@ -1,5 +1,5 @@
-use rusqlite::{params, Connection, Result};
 use crate::datatypes::stonk::Stonk;
+use rusqlite::{params, Connection, Result};
 
 pub fn save_to_database(stonks: &Vec<Stonk>) -> Result<()> {
     let conn = Connection::open("stonks.db")?;
