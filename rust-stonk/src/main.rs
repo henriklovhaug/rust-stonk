@@ -4,29 +4,26 @@ use std::time::{Duration, UNIX_EPOCH};
 use tokio;
 use yahoo_finance_api as yahoo;
 mod database;
-mod files;
 use database::database::{get_stonk_from_database, save_to_database};
+
+mod files;
 
 mod datatypes;
 use datatypes::stonk::Stonk;
 
+mod stonk_finder;
+use stonk_finder::stonk_finder::get_stonk_history;
+
 #[tokio::main]
 async fn main() {
-    let provider = yahoo::YahooConnector::new();
     let start = Utc.ymd(2020, 1, 1).and_hms_milli(0, 0, 0, 0);
     let end = Utc.ymd(2020, 1, 31).and_hms_milli(23, 59, 59, 999);
-    // returns historic quotes with daily interval
-    let resp = provider
-        .get_quote_history("TSLA", start, end)
-        .await
-        .unwrap();
-    let quotes = resp.quotes().unwrap();
-    let stonk: Vec<Stonk> = quotes.iter().map(|quote| Stonk::from(quote)).collect();
+    let stonks: Vec<Stonk> = get_stonk_history("TSLA", start, end).await;
     //stonk_printer(&stonk, "TSLA");
-    save_to_database(&stonk).ok();
+    //save_to_database(&stonk).ok();
     let print_stonks = get_stonk_from_database("TSLA").unwrap();
-    stonk_printer(&print_stonks, "TSLA");
-    stonksaver::save_stonk(stonk);
+    stonk_printer(&stonks, "TSLA");
+    stonksaver::save_stonk(stonks);
 }
 
 fn stonk_printer(stonks: &Vec<Stonk>, stonk_name: &str) {
