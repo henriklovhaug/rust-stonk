@@ -33,12 +33,12 @@ pub fn save_to_database(stonks: &Vec<Stonk>) -> Result<()> {
     }
     Ok(())
 }
-#[allow(dead_code)]
+#[allow(unused_variables)]
 pub fn get_stonk_from_database(stonk_name: &str) -> Result<Vec<Stonk>> {
-    let conn = Connection::open("stonks.db")?;
-    let mut stonks = Vec::new();
-    let mut stonk_iter = conn.prepare("SELECT * FROM stonks WHERE id = (SELECT MAX(id) FROM stonks)")?;
-    let stonk_row = stonk_iter.query_row(params![], |row| {
+    let conn = Connection::open("stonks.db").unwrap();
+    let mut stonks: Vec<Stonk> = Vec::new();
+    let mut stmp = conn.prepare("SELECT * FROM stonks")?;
+    let stonk_iter = stmp.query_map([], |row| {
         Ok(Stonk {
             timestamp: row.get(0)?,
             open: row.get(1)?,
@@ -49,6 +49,8 @@ pub fn get_stonk_from_database(stonk_name: &str) -> Result<Vec<Stonk>> {
             adjclose: row.get(6)?,
         })
     })?;
-    stonks.push(stonk_row);
+    for stonk in stonk_iter {
+        stonks.push(stonk.unwrap());
+    }
     Ok(stonks)
 }

@@ -22,8 +22,10 @@ async fn main() {
         .unwrap();
     let quotes = resp.quotes().unwrap();
     let stonk: Vec<Stonk> = quotes.iter().map(|quote| Stonk::from(quote)).collect();
-    stonk_printer(&stonk, "TSLA");
-    save_to_database(&stonk).ok();
+    //stonk_printer(&stonk, "TSLA");
+    // save_to_database(&stonk).ok();
+    // let print_stonks = get_stonk_from_database("TSLA").ok().unwrap();
+    // stonk_printer(&print_stonks, "TSLA");
     stonksaver::save_stonk(stonk);
 }
 
