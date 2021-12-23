@@ -10,7 +10,7 @@ pub fn save_to_database(stonks: &Vec<Stonk>) -> Result<()> {
             open REAL NOT NULL,
             high REAL NOT NULL,
             low REAL NOT NULL,
-            volume REAL NOT NULL,
+            volume INTEGER NOT NULL,
             close REAL NOT NULL,
             adjclose REAL NOT NULL
         )",
@@ -40,13 +40,13 @@ pub fn get_stonk_from_database(stonk_name: &str) -> Result<Vec<Stonk>> {
     let mut stmp = conn.prepare("SELECT * FROM stonks")?;
     let stonk_iter = stmp.query_map([], |row| {
         Ok(Stonk {
-            timestamp: row.get(0)?,
-            open: row.get(1)?,
-            high: row.get(2)?,
-            low: row.get(3)?,
-            volume: row.get(4)?,
-            close: row.get(5)?,
-            adjclose: row.get(6)?,
+            timestamp: row.get(1)?,
+            open: row.get(2)?,
+            high: row.get(3)?,
+            low: row.get(4)?,
+            volume: row.get(5)?,
+            close: row.get(6)?,
+            adjclose: row.get(7)?,
         })
     })?;
     for stonk in stonk_iter {
