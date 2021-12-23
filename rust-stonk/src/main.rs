@@ -8,7 +8,6 @@ mod files;
 mod datatypes;
 use datatypes::stonk::Stonk;
 
-
 #[tokio::main]
 async fn main() {
     let provider = yahoo::YahooConnector::new();
@@ -27,9 +26,12 @@ async fn main() {
 
 fn stonk_printer(stonks: &Vec<Stonk>, stonk_name: &str) {
     for stonk in stonks {
-        //let time = DateTime::<Utc>::from(UNIX_EPOCH + Duration::from_secs(stonk.timestamp));
-        println!("{}:", stonk_name);
-        println!("\t Opening price: {} \n\t Dayly high: {} \n
-                  ", stonk.open, stonk.high);
+        let time = DateTime::<Utc>::from(UNIX_EPOCH + Duration::from_secs(stonk.timestamp));
+        println!("{} at {}:", stonk_name, time.format("%Y-%m-%d %H:%M:%S"));
+        println!(
+            "\t Opening price: {} \n\t Daily high: {} \n\t Daily low: {} \n\t Volume: {} \n\t Closing price: {} \n\t Adjusted closing price: {}
+                  ",
+            stonk.open, stonk.high, stonk.low, stonk.volume, stonk.close, stonk.adjclose
+        );
     }
 }
