@@ -2,8 +2,9 @@ use chrono::{DateTime, TimeZone, Utc};
 use files::stonksaver;
 use std::time::{Duration, UNIX_EPOCH};
 use tokio;
-use yahoo_finance_api as yahoo;
+
 mod database;
+#[allow(unused_imports)]
 use database::database::{get_stonk_from_database, save_to_database};
 
 mod files;
@@ -22,7 +23,7 @@ async fn main() {
     //stonk_printer(&stonk, "TSLA");
     //save_to_database(&stonk).ok();
     let print_stonks = get_stonk_from_database("TSLA").unwrap();
-    stonk_printer(&stonks, "TSLA");
+    stonk_printer(&print_stonks, "TSLA");
     stonksaver::save_stonk(stonks);
 }
 

@@ -1,6 +1,7 @@
 use crate::datatypes::stonk::Stonk;
 use rusqlite::{params, Connection, Result};
 
+#[allow(dead_code)]
 pub fn save_to_database(stonks: &Vec<Stonk>) -> Result<()> {
     let conn = Connection::open("stonks.db")?;
     conn.execute(
@@ -53,4 +54,37 @@ pub fn get_stonk_from_database(stonk_name: &str) -> Result<Vec<Stonk>> {
         stonks.push(stonk.unwrap());
     }
     Ok(stonks)
+}
+
+#[allow(dead_code)]
+pub fn remove_duplicates_from_database() -> Result<()> {
+    let conn = Connection::open("stonks.db")?;
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS stonks_new (
+            id INTEGER PRIMARY KEY,
+            timestamp INTEGER NOT NULL,
+            open REAL NOT NULL,
+            high REAL NOT NULL,
+            low REAL NOT NULL,
+            volume INTEGER NOT NULL,
+            close REAL NOT NULL,
+            adjclose REAL NOT NULL
+        )",
+        params![],
+    )?;
+    conn.execute(
+        "INSERT INTO stonks_new (timestamp, open, high, low, volume, close, adjclose)
+        SELECT DISTINCT timestamp, open, high, low, volume, close, adjclose
+        FROM stonks",
+        params![],
+    )?;
+    conn.execute(
+        "DROP TABLE stonks",
+        params![],
+    )?;
+    conn.execute(
+        "ALTER TABLE stonks_new RENAME TO stonks",
+        params![],
+    )?;
+    Ok(())
 }
