@@ -4,6 +4,8 @@ use std::time::{Duration, UNIX_EPOCH};
 use tokio;
 use yahoo_finance_api as yahoo;
 mod files;
+mod database;
+use database::database::{save_to_database, get_stonk_from_database};
 
 mod datatypes;
 use datatypes::stonk::Stonk;
@@ -21,6 +23,7 @@ async fn main() {
     let quotes = resp.quotes().unwrap();
     let stonk: Vec<Stonk> = quotes.iter().map(|quote| Stonk::from(quote)).collect();
     stonk_printer(&stonk, "TSLA");
+    save_to_database(&stonk).ok();
     stonksaver::save_stonk(stonk);
 }
 
