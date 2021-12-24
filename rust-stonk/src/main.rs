@@ -1,5 +1,6 @@
 use chrono::{DateTime, TimeZone, Utc};
 use files::stonksaver;
+use warp::Filter;
 use std::time::{Duration, UNIX_EPOCH};
 use tokio;
 
@@ -25,6 +26,14 @@ async fn main() {
     let print_stonks = get_stonk_from_database("TSLA").unwrap();
     stonk_printer(&print_stonks, "TSLA");
     stonksaver::save_stonk(stonks);
+
+    // GET /hello/warp => 200 OK with body "Hello, warp!"
+    let hello = warp::path!("hello")
+        .map(|| format!("Hello, Bing Bong!"));
+
+    warp::serve(hello)
+        .run(([127, 0, 0, 1], 3030))
+        .await;
 }
 
 fn stonk_printer(stonks: &Vec<Stonk>, stonk_name: &str) {
