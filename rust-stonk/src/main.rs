@@ -3,7 +3,7 @@ use files::stonksaver;
 use std::time::{Duration, UNIX_EPOCH};
 use tokio;
 use warp::Filter;
-
+use yahoo_finance_api as yahoo;
 mod database;
 #[allow(unused_imports)]
 use database::database::{get_stonk_from_database, save_to_database};
@@ -15,7 +15,7 @@ use datatypes::api_stonk::APIStonk;
 use datatypes::stonk::Stonk;
 
 mod stonk_finder;
-use stonk_finder::stonk_finder::get_stonk_history;
+use stonk_finder::stonk_finder::{find_stonk_by_company_name, get_stonk_history};
 
 #[tokio::main]
 async fn main() {
@@ -38,6 +38,13 @@ async fn main() {
         let stonk = get_stonk_from_database(&name).unwrap();
         warp::reply::json(&stonk)
     });
+
+    let resp = find_stonk_by_company_name("Apple").await;
+
+    println!("All tickers found while searching for 'Apple':");
+    for item in resp {
+        println!("{}", item.symbol)
+    }
 
     let routes = hello.or(stonk).or(stonk_name);
 
