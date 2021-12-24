@@ -31,9 +31,17 @@ async fn main() {
     let hello = warp::path!("hello")
         .map(|| format!("Hello, Bing Bong STONK!"));
 
-    warp::serve(hello)
+    // GET /STONK => 200 OK with body Very Stonk
+    let stonk = warp::path!("STONK")
+        .map(|| format!("Very Stonk"));
+
+    let routes = hello.or(stonk);
+
+    warp::serve(routes)
         .run(([127, 0, 0, 1], 3030))
         .await;
+
+
 }
 
 fn stonk_printer(stonks: &Vec<Stonk>, stonk_name: &str) {
