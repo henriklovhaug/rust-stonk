@@ -1,8 +1,8 @@
 use chrono::{DateTime, TimeZone, Utc};
 use files::stonksaver;
-use warp::Filter;
 use std::time::{Duration, UNIX_EPOCH};
 use tokio;
+use warp::Filter;
 
 mod database;
 #[allow(unused_imports)]
@@ -11,8 +11,8 @@ use database::database::{get_stonk_from_database, save_to_database};
 mod files;
 
 mod datatypes;
-use datatypes::stonk::Stonk;
 use datatypes::api_stonk::APIStonk;
+use datatypes::stonk::Stonk;
 
 mod stonk_finder;
 use stonk_finder::stonk_finder::get_stonk_history;
@@ -29,26 +29,19 @@ async fn main() {
     stonksaver::save_stonk(stonks);
 
     // GET /hello/warp => 200 OK with body "Hello, warp!"
-    let hello = warp::path!("hello")
-        .map(|| format!("Hello, Bing Bong STONK!"));
+    let hello = warp::path!("hello").map(|| format!("Hello, Bing Bong STONK!"));
 
     // GET /STONK => 200 OK with body Very Stonk
-    let stonk = warp::path!("STONK")
-        .map(|| format!("Very Stonk"));
+    let stonk = warp::path!("STONK").map(|| format!("Very Stonk"));
 
-    let stonk_name = warp::path!("STONK" / String)
-        .map(|name: String| {
-            let stonk = get_stonk_from_database(&name).unwrap();
-            warp::reply::json(&stonk)
-        });
+    let stonk_name = warp::path!("STONK" / String).map(|name: String| {
+        let stonk = get_stonk_from_database(&name).unwrap();
+        warp::reply::json(&stonk)
+    });
 
     let routes = hello.or(stonk).or(stonk_name);
 
-    warp::serve(routes)
-        .run(([127, 0, 0, 1], 3030))
-        .await;
-
-
+    warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
 
 fn stonk_printer(stonks: &Vec<Stonk>, stonk_name: &str) {

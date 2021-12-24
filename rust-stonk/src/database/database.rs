@@ -78,13 +78,7 @@ pub fn remove_duplicates_from_database() -> Result<()> {
         FROM stonks",
         params![],
     )?;
-    conn.execute(
-        "DROP TABLE stonks",
-        params![],
-    )?;
-    conn.execute(
-        "ALTER TABLE stonks_new RENAME TO stonks",
-        params![],
-    )?;
+    conn.execute("DROP TABLE stonks", params![])?;
+    conn.execute("ALTER TABLE stonks_new RENAME TO stonks", params![])?;
     Ok(())
 }
