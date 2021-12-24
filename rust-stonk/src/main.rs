@@ -12,6 +12,7 @@ mod files;
 
 mod datatypes;
 use datatypes::stonk::Stonk;
+use datatypes::api_stonk::APIStonk;
 
 mod stonk_finder;
 use stonk_finder::stonk_finder::get_stonk_history;
@@ -35,7 +36,13 @@ async fn main() {
     let stonk = warp::path!("STONK")
         .map(|| format!("Very Stonk"));
 
-    let routes = hello.or(stonk);
+    let stonk_name = warp::path!("STONK" / String)
+        .map(|name: String| {
+            let stonk = get_stonk_from_database(&name).unwrap();
+            warp::reply::json(&stonk)
+        });
+
+    let routes = hello.or(stonk).or(stonk_name);
 
     warp::serve(routes)
         .run(([127, 0, 0, 1], 3030))
