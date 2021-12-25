@@ -1,6 +1,6 @@
-use crate::{Client, Clients};
 use crate::stonk_finder::stonk_finder::get_stonk_history;
-use chrono::{Utc, TimeZone};
+use crate::{Client, Clients};
+use chrono::{TimeZone, Utc};
 use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
@@ -53,9 +53,7 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
             None => return,
         }
         return;
-    }
-
-    else if message.starts_with("stonk") {
+    } else if message.starts_with("stonk") {
         let locked = clients.lock().await;
         let stonk_string = message.split_ascii_whitespace().nth(1).unwrap();
         match locked.get(client_id) {
@@ -66,7 +64,9 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                     let end = Utc.ymd(2020, 1, 31).and_hms_milli(23, 59, 59, 999);
                     let send_string = get_stonk_history(stonk_string, start, end).await;
 
-                    let _ = sender.send(Ok(Message::text(serde_json::to_string(&send_string).unwrap())));
+                    let _ = sender.send(Ok(Message::text(
+                        serde_json::to_string(&send_string).unwrap(),
+                    )));
                 }
             }
             None => return,
