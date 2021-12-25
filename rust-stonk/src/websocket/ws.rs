@@ -36,6 +36,9 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     clients.lock().await.remove(&uuid);
     println!("{} disconnected", uuid);
 }
+
+//TODO for Stefan:
+// - reduce complexity of client_msg
 async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
     println!("received message from {}: {:?}", client_id, msg);
     let message = match msg.to_str() {
