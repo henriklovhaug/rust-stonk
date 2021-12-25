@@ -34,7 +34,7 @@ pub struct SearchStonk {
 impl From<&YQuoteItem> for SearchStonk {
     fn from(quote: &YQuoteItem) -> SearchStonk {
         SearchStonk {
-            stonk_name: quote.symbol.clone()
+            stonk_name: quote.symbol.clone(),
         }
     }
 }
