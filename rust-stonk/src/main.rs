@@ -6,6 +6,7 @@ use crate::websocket::handlers;
 type Result<T> = std::result::Result<T, Rejection>;
 mod datatypes;
 use crate::datatypes::client::{Client, Clients};
+mod stonk_finder;
 
 #[tokio::main]
 async fn main() {
