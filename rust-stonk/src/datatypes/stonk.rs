@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use yahoo_finance_api::Quote;
+use yahoo_finance_api::{Quote, YQuoteItem};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Stonk {
@@ -22,6 +22,19 @@ impl From<&Quote> for Stonk {
             volume: quote.volume,
             close: quote.close,
             adjclose: quote.adjclose,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SearchStonk {
+    pub stonk_name: String,
+}
+
+impl From<&YQuoteItem> for SearchStonk {
+    fn from(quote: &YQuoteItem) -> SearchStonk {
+        SearchStonk {
+            stonk_name: quote.symbol.clone()
         }
     }
 }

@@ -1,4 +1,5 @@
-use crate::stonk_finder::stonk_finder::get_stonk_history;
+use crate::datatypes::stonk::SearchStonk;
+use crate::stonk_finder::stonk_finder::{get_stonk_history, find_stonk_by_company_name};
 use crate::{Client, Clients};
 use chrono::{TimeZone, Utc};
 use futures::{FutureExt, StreamExt};
@@ -59,6 +60,15 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                         let stonk_history = get_stonk_history(stonk_name, start, end).await;
                         let _ = sender.send(Ok(Message::text(
                             serde_json::to_string(&stonk_history).unwrap(),
+                        )));
+                    }
+
+                    _ if message.starts_with("search") => {
+                        let search_term = &message.split_ascii_whitespace().nth(1).unwrap();
+                        let search_results = find_stonk_by_company_name(search_term).await;
+                        let send_string: Vec<SearchStonk> = search_results.iter().map(|x| SearchStonk::from(x)).collect();
+                        let _ = sender.send(Ok(Message::text(
+                            serde_json::to_string(&send_string).unwrap(),
                         )));
                     }
                     _ => {
