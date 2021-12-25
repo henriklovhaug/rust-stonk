@@ -15,3 +15,6 @@ tokio = { version = "1.15.0", features = ["full"] }
 serde_json = "1.0.73"
 serde = "1.0.73"
 warp = "0.3.2"
+futures = { version = "0.3.19", default-features=false}
+tokio-stream = "0.1.6"
+uuid = { version = "0.8.2", features = ["serde", "v4"] }
