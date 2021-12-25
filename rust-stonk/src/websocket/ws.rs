@@ -41,36 +41,33 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
         Ok(v) => v,
         Err(_) => return,
     };
-    if message == "ping" || message == "ping\n" {
-        let locked = clients.lock().await;
-        match locked.get(client_id) {
-            Some(v) => {
-                if let Some(sender) = &v.sender {
-                    println!("sending pong");
-                    let _ = sender.send(Ok(Message::text("pong")));
-                }
-            }
-            None => return,
-        }
-        return;
-    } else if message.starts_with("stonk") {
-        let locked = clients.lock().await;
-        let stonk_string = message.split_ascii_whitespace().nth(1).unwrap();
-        match locked.get(client_id) {
-            Some(v) => {
-                if let Some(sender) = &v.sender {
-                    println!("sending stonk");
-                    let start = Utc.ymd(2020, 1, 1).and_hms_milli(0, 0, 0, 0);
-                    let end = Utc.ymd(2020, 1, 31).and_hms_milli(23, 59, 59, 999);
-                    let send_string = get_stonk_history(stonk_string, start, end).await;
+    let locked = clients.lock().await;
+    match locked.get(client_id) {
+        Some(client) => {
+            if let Some(sender) = client.sender.as_ref() {
+                match message {
+                    "ping" | "ping\n" => {
+                        let _ = sender.send(Ok(Message::text("pong")));
+                    }
 
-                    let _ = sender.send(Ok(Message::text(
-                        serde_json::to_string(&send_string).unwrap(),
-                    )));
+                    //Check if message starts with "stonk:"
+                    //TODO support user specified start and end dates
+                    _ if message.starts_with("stonk") => {
+                        let stonk_name = &message.split_ascii_whitespace().nth(1).unwrap();
+                        let start = Utc.ymd(2020, 1, 1).and_hms_milli(0, 0, 0, 0);
+                        let end = Utc.ymd(2020, 1, 31).and_hms_milli(23, 59, 59, 999);
+                        let stonk_history = get_stonk_history(stonk_name, start, end).await;
+                        let _ = sender.send(Ok(Message::text(
+                            serde_json::to_string(&stonk_history).unwrap(),
+                        )));
+                    }
+                    _ => {
+                        let _ = sender.send(Ok(Message::text("Not yet supported")));
+                    }
                 }
             }
-            None => return,
         }
-        return;
-    };
+        None => return,
+    }
+    return;
 }
