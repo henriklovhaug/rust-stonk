@@ -1,64 +1,15 @@
-use chrono::{DateTime, TimeZone, Utc};
-use files::stonksaver;
-use std::time::{Duration, UNIX_EPOCH};
-use tokio;
-use warp::Filter;
-use yahoo_finance_api as yahoo;
-mod database;
-#[allow(unused_imports)]
-use database::database::{get_stonk_from_database, save_to_database};
-
-mod files;
-
-mod datatypes;
-use datatypes::api_stonk::APIStonk;
-use datatypes::stonk::Stonk;
-
-mod stonk_finder;
-use stonk_finder::stonk_finder::{find_stonk_by_company_name, get_stonk_history};
+use warp::{Filter, Rejection};
+mod websocket;
+use crate::websocket::handlers;
+type Result<T> = std::result::Result<T, Rejection>;
 
 #[tokio::main]
 async fn main() {
-    let start = Utc.ymd(2020, 1, 1).and_hms_milli(0, 0, 0, 0);
-    let end = Utc.ymd(2020, 1, 31).and_hms_milli(23, 59, 59, 999);
-    let stonks: Vec<Stonk> = get_stonk_history("TSLA", start, end).await;
-    //stonk_printer(&stonk, "TSLA");
-    //save_to_database(&stonk).ok();
-    let print_stonks = get_stonk_from_database("TSLA").unwrap();
-    stonk_printer(&print_stonks, "TSLA");
-    stonksaver::save_stonk(stonks);
-
-    // GET /hello/warp => 200 OK with body "Hello, warp!"
-    let hello = warp::path!("hello").map(|| format!("Hello, Bing Bong STONK!"));
-
-    // GET /STONK => 200 OK with body Very Stonk
-    let stonk = warp::path!("STONK").map(|| format!("Very Stonk"));
-
-    let stonk_name = warp::path!("STONK" / String).map(|name: String| {
-        let stonk = get_stonk_from_database(&name).unwrap();
-        warp::reply::json(&stonk)
-    });
-
-    let resp = find_stonk_by_company_name("Apple").await;
-
-    println!("All tickers found while searching for 'Apple':");
-    for item in resp {
-        println!("{}", item.symbol)
-    }
-
-    let routes = hello.or(stonk).or(stonk_name);
-
-    warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
-}
-
-fn stonk_printer(stonks: &Vec<Stonk>, stonk_name: &str) {
-    for stonk in stonks {
-        let time = DateTime::<Utc>::from(UNIX_EPOCH + Duration::from_secs(stonk.timestamp));
-        println!("{} at {}:", stonk_name, time.format("%Y-%m-%d %H:%M:%S"));
-        println!(
-            "\t Opening price: {} \n\t Daily high: {} \n\t Daily low: {} \n\t Volume: {} \n\t Closing price: {} \n\t Adjusted closing price: {}
-                  ",
-            stonk.open, stonk.high, stonk.low, stonk.volume, stonk.close, stonk.adjclose
-        );
-    }
+    println!("Configuring websocket route");
+    let ws_route = warp::path("ws")
+        .and(warp::ws())
+        .and_then(handlers::ws_handler);
+    let routes = ws_route.with(warp::cors().allow_any_origin());
+    println!("Starting server");
+    warp::serve(routes).run(([127, 0, 0, 1], 8000)).await;
 }
