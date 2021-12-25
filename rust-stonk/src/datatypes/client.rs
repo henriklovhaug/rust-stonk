@@ -1,8 +1,7 @@
-use std::{sync::Arc, collections::HashMap};
+use std::{collections::HashMap, sync::Arc};
 
-use tokio::sync::{Mutex, mpsc};
+use tokio::sync::{mpsc, Mutex};
 use warp::{ws::Message, Rejection};
-
 
 #[derive(Debug, Clone)]
 pub struct Client {

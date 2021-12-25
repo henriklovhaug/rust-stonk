@@ -9,7 +9,6 @@ use crate::datatypes::client::{Client, Clients};
 
 #[tokio::main]
 async fn main() {
-
     let clients: Clients = Arc::new(Mutex::new(HashMap::new()));
 
     println!("Configuring websocket route");
