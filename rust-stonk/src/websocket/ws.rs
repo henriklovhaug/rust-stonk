@@ -57,7 +57,15 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                         let stonk_name = &message.split_ascii_whitespace().nth(1).unwrap();
                         let start = Utc.ymd(2020, 1, 1).and_hms_milli(0, 0, 0, 0);
                         let end = Utc.ymd(2020, 1, 31).and_hms_milli(23, 59, 59, 999);
-                        let stonk_history = get_stonk_history(stonk_name, start, end).await;
+                        let stonk_history = match get_stonk_history(stonk_name, start, end).await {
+                            Ok(v) => v,
+                            Err(e) => {
+                                println!("error getting stonk history: {}", e);
+                                let _ =
+                                    sender.send(Ok(Message::text("error getting stonk history")));
+                                return;
+                            }
+                        };
                         let _ = sender.send(Ok(Message::text(
                             serde_json::to_string(&stonk_history).unwrap(),
                         )));

@@ -8,14 +8,16 @@ pub async fn get_stonk_history(
     stonk_name: &str,
     start: DateTime<Utc>,
     end: DateTime<Utc>,
-) -> Vec<Stonk> {
+) -> Result<Vec<Stonk>, Box<dyn std::error::Error>> {
     let provider = yahoo::YahooConnector::new();
     let resp = provider
         .get_quote_history(stonk_name, start, end)
-        .await
-        .unwrap();
-    let quotes = resp.quotes().unwrap();
-    quotes.iter().map(|quote| Stonk::from(quote)).collect()
+        .await?
+        .quotes()?
+        .iter()
+        .map(|quote| Stonk::from(quote))
+        .collect();
+    Ok(resp)
 }
 
 pub async fn find_stonk_by_company_name(company_name: &str) -> Vec<YQuoteItem> {
