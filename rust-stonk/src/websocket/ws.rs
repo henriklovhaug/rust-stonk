@@ -57,7 +57,7 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                     //Check if message starts with "stonk:"
                     //TODO support user specified start and end dates
                     _ if message.starts_with("stonk") => {
-                        let stonk_name = &message.split_ascii_whitespace().nth(1).unwrap();
+                        let stonk_name = message.split_ascii_whitespace().nth(1).unwrap();
                         let start = Utc.ymd(2020, 1, 1).and_hms_milli(0, 0, 0, 0);
                         let end = Utc.ymd(2020, 1, 31).and_hms_milli(23, 59, 59, 999);
                         let stonk_history = match get_stonk_history(stonk_name, start, end).await {
@@ -92,6 +92,6 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
             }
         }
         None => return,
-    }
+    };
     return;
 }
