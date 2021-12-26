@@ -19,9 +19,8 @@ jobs:
         profile: minimal
         toolchain: stable
     - uses: Swatinem/rust-cache@v1
-    - uses: actions-rs/cargo@v1
-      with:
-        command: build
+    - run: cargo build
+      working-directory: ./rust-stonk
 
   test:
     needs: build
@@ -33,6 +32,5 @@ jobs:
         profile: minimal
         toolchain: stable
     - uses: Swatinem/rust-cache@v1
-    - uses: actions-rs/cargo@v1
-      with:
-        command: test
+    - run: cargo test
+      working-directory: ./rust-stonk
