@@ -6,6 +6,9 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    run: echo "${{ github.ref.protected }}"
   build:
 
     runs-on: ubuntu-latest
