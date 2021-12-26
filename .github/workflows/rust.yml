@@ -13,7 +13,7 @@ jobs:
     steps:
 
     - uses: actions/checkout@v2
-    
+
     - name: Cache Results
     - uses: actions/cache@v2
       with:
@@ -25,8 +25,8 @@ jobs:
           target/
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     
-    - name: Compile
-      run: cargo build --verbose
+    - run: cargo build --verbose
+    name: Compile
 
-    - name: Test
-      run: cargo test --verbose
+    - run: cargo test --verbose
+    name: Test
