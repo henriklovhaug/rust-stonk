@@ -1,12 +1,16 @@
+use crate::datatypes::api_stonk::{APIStonk, LocalApiStonk};
+use crate::datatypes::client::{Client, Clients};
 use crate::datatypes::stonk::SearchStonk;
-use crate::stonk_finder::stonk_finder::{find_stonk_by_company_name, get_stonk_history};
-use crate::{Client, Clients};
-use chrono::{TimeZone, Utc};
+use crate::stonk_finder::stonk_finder::{
+    find_stonk_by_company_name, get_latest_stonk, get_stonk_history,
+};
+
 use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use uuid::Uuid;
 use warp::ws::{Message, WebSocket};
+
 pub async fn client_connection(ws: WebSocket, clients: Clients) {
     println!("establishing client connection... {:?}", ws);
     let (client_ws_sender, mut client_ws_rcv) = ws.split();
@@ -37,8 +41,7 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     println!("{} disconnected", uuid);
 }
 
-//TODO for Stefan:
-// - reduce complexity of client_msg
+
 async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
     println!("received message from {}: {:?}", client_id, msg);
     let message = match msg.to_str() {
@@ -57,10 +60,8 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                     //Check if message starts with "stonk:"
                     //TODO support user specified start and end dates
                     _ if message.starts_with("stonk") => {
-                        let stonk_name = &message.split_ascii_whitespace().nth(1).unwrap();
-                        let start = Utc.ymd(2020, 1, 1).and_hms_milli(0, 0, 0, 0);
-                        let end = Utc.ymd(2020, 1, 31).and_hms_milli(23, 59, 59, 999);
-                        let stonk_history = match get_stonk_history(stonk_name, start, end).await {
+                        let stonk_name = message.split_ascii_whitespace().nth(1).unwrap();
+                        let stonk_history = match get_latest_stonk(stonk_name).await {
                             Ok(v) => v,
                             Err(e) => {
                                 println!("error getting stonk history: {}", e);
@@ -85,6 +86,15 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                             serde_json::to_string(&send_string).unwrap(),
                         )));
                     }
+
+                    _ if message.starts_with("{") => {
+                        let value = client_msg_objects(&message).await;
+                        if value.is_ok() {
+                            let _ = sender.send(Ok(Message::text(value.unwrap())));
+                        } else {
+                            let _ = sender.send(Ok(Message::text("error parsing message object")));
+                        }
+                    }
                     _ => {
                         let _ = sender.send(Ok(Message::text("Not yet supported")));
                     }
@@ -92,6 +102,34 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
             }
         }
         None => return,
-    }
+    };
     return;
+}
+
+//Handle objects sent from client
+async fn client_msg_objects(message: &str) -> Result<String, String> {
+    match message {
+        _ if serde_json::from_str::<APIStonk>(message).is_ok() => {
+            let stonk = serde_json::from_str::<APIStonk>(message).unwrap();
+            let rust_stonk = LocalApiStonk::from(&stonk);
+            let history =
+                match get_stonk_history(&rust_stonk.stonk_name, rust_stonk.start, rust_stonk.end)
+                    .await
+                {
+                    Ok(v) => v,
+                    Err(e) => {
+                        println!("error getting stonk history: {}", e);
+                        return Err("Error getting stonk history".to_string());
+                    }
+                };
+            let send_string = serde_json::to_string(&history).unwrap();
+
+            return Ok(send_string);
+        }
+
+        _ => {
+            println!("error parsing message: {}", message);
+            return Err("Error parsing message".to_string());
+        }
+    };
 }

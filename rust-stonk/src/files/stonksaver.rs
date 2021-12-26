@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::Write;
 
-use crate::Stonk;
+use crate::datatypes::stonk::Stonk;
 
 pub fn save_stonk(stonk: Vec<Stonk>) {
     let mut json_string = serde_json::to_string(&stonk).unwrap();
