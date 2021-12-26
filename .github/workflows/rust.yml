@@ -25,8 +25,8 @@ jobs:
           ~/.cargo/registry/index/
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
-          target/
-        key: ${{ runner.os }}-cargo-${{ github.run_id }}
+          rust-stonk/target/
+        key: ${{ runner.os }}-Cargo
     - run: cargo build
       working-directory: ./rust-stonk
 
@@ -46,7 +46,7 @@ jobs:
           ~/.cargo/registry/index/
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
-          target/
-        key: ${{ runner.os }}-cargo-${{ github.run_id }}
+          rust-stonk/target/
+        key: ${{ runner.os }}-Cargo
     - run: cargo test
       working-directory: ./rust-stonk
