@@ -1,19 +1,17 @@
 name: Rust
 
-on: pull_request
+on:
+  pull_request:
+    branches:
+      - main
+      - development
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-    - run: echo "${{ github.ref_protected }}"
-
   build:
     runs-on: ubuntu-latest
-    if: ${{ github.ref_protected }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions-rs/toolchain@v1
@@ -28,7 +26,6 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ github.ref_protected }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions-rs/toolchain@v1
