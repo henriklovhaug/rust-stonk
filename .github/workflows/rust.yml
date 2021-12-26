@@ -7,6 +7,10 @@ env:
 
 jobs:
 
+  check:
+    runs-on: ubuntu-latest
+    - run: echo "${{ github.ref_protected }}"
+
   compile:
     runs-on: ubuntu-latest
     if: ${{ github.ref_protected }}
@@ -27,6 +31,24 @@ jobs:
     
     - name: Compile
       run: cargo build --verbose
+
+  test:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_protected }}
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Cache Results
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Test
       run: cargo test --verbose
