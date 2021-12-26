@@ -25,3 +25,15 @@ pub async fn find_stonk_by_company_name(company_name: &str) -> Vec<YQuoteItem> {
     let resp = provider.search_ticker(company_name).await.unwrap();
     resp.quotes
 }
+
+pub async fn get_latest_stonk(stonk_name: &str) -> Result<Vec<Stonk>, Box<dyn std::error::Error>> {
+    let provider = yahoo::YahooConnector::new();
+    let resp = provider
+        .get_latest_quotes(stonk_name, "1m")
+        .await?
+        .quotes()?
+        .iter()
+        .map(|quote| Stonk::from(quote))
+        .collect();
+    Ok(resp)
+}
