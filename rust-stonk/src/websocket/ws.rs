@@ -41,8 +41,7 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     println!("{} disconnected", uuid);
 }
 
-//TODO for Stefan:
-// - reduce complexity of client_msg
+
 async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
     println!("received message from {}: {:?}", client_id, msg);
     let message = match msg.to_str() {
@@ -107,6 +106,7 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
     return;
 }
 
+//Handle objects sent from client
 async fn client_msg_objects(message: &str) -> Result<String, String> {
     match message {
         _ if serde_json::from_str::<APIStonk>(message).is_ok() => {
