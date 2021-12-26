@@ -12,6 +12,8 @@ jobs:
     if: ${{ github.ref_protected }}
     steps:
 
+    - uses: actions/checkout@v2
+    
     - name: Cache Results
     - uses: actions/cache@v2
       with:
@@ -24,9 +26,7 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     
     - name: Compile
-    - uses: actions/checkout@v2
-    - run: cargo build --verbose
+      run: cargo build --verbose
 
     - name: Test
-    - uses: actions/checkout@v2
-    - run: cargo test --verbose
+      run: cargo test --verbose
