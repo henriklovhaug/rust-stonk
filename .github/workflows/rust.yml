@@ -1,8 +1,6 @@
 name: Rust
 
-on:
-  pull_request:
-    branches: [ '${{ github.event.repository.default_branch }}', development ]
+on: pull_request
 
 env:
   CARGO_TERM_COLOR: always
@@ -11,6 +9,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    if: ${{ github.ref.protected }}
 
     steps:
     
