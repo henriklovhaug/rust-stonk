@@ -1,9 +1,9 @@
 [package]
-name = "rust-stonk"
+name = "rust_stonk"
 version = "0.1.0"
 edition = "2021"
+author = "GFP Stonk"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies.rusqlite]
 version = "0.26.3"
 features = ["bundled"]

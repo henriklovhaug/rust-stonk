@@ -1,9 +1,10 @@
 use crate::datatypes::api_stonk::{APIStonk, LocalApiStonk};
+use crate::datatypes::client::{Client, Clients};
 use crate::datatypes::stonk::SearchStonk;
 use crate::stonk_finder::stonk_finder::{
     find_stonk_by_company_name, get_latest_stonk, get_stonk_history,
 };
-use crate::{Client, Clients};
+
 use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
