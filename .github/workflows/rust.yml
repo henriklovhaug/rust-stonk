@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Cache Results
-    - uses: actions/cache@v2
+      uses: actions/cache@v2
       with:
         path: |
           ~/.cargo/bin/
@@ -25,8 +25,9 @@ jobs:
           target/
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     
-    - run: cargo build --verbose
-    name: Compile
+    - name: Compile
+      run: cargo build --verbose
 
-    - run: cargo test --verbose
-    name: Test
+    - name: Test
+      run: cargo test --verbose
+    
