@@ -6,6 +6,11 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "${{ github.ref_protected }}"
+
   build:
     runs-on: ubuntu-latest
     if: ${{ github.ref_protected }}
