@@ -6,12 +6,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-    - run: echo "${{ github.ref_protected }}"
-
-  compile:
+  build:
     runs-on: ubuntu-latest
     if: ${{ github.ref_protected }}
     steps:
@@ -29,10 +24,11 @@ jobs:
           target/
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     
-    - name: Compile
+    - name: Build
       run: cargo build --verbose
 
   test:
+    needs: build
     runs-on: ubuntu-latest
     if: ${{ github.ref_protected }}
     steps:
