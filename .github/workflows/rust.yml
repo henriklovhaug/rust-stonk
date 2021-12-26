@@ -8,7 +8,8 @@ env:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    run: echo "${{ github.ref.protected }}"
+    steps:
+      run: echo "${{ github.ref.protected }}"
   build:
 
     runs-on: ubuntu-latest
