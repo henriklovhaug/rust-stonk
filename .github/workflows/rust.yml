@@ -9,6 +9,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
+    - name: Protected
       run: echo "${{ github.ref.protected }}"
   build:
 
