@@ -22,7 +22,7 @@ jobs:
       with:
         path: |
           ~/.cargo/bin/
-          ~/.cargo/registry/index/
+          #~/.cargo/registry/index/
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
           rust-stonk/target/
@@ -43,7 +43,7 @@ jobs:
       with:
         path: |
           ~/.cargo/bin/
-          ~/.cargo/registry/index/
+          #~/.cargo/registry/index/
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
           rust-stonk/target/
