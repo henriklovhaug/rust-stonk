@@ -1,0 +1,52 @@
+name: Rust
+
+on:
+  pull_request:
+    branches:
+      - main
+      - development
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/bin/
+          #~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          rust-stonk/target/
+        key: ${{ runner.os }}-Cargo
+    - run: cargo build
+      working-directory: ./rust-stonk
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/bin/
+          #~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          rust-stonk/target/
+        key: ${{ runner.os }}-Cargo
+    - run: cargo test
+      working-directory: ./rust-stonk

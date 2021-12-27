@@ -1,8 +1,10 @@
 use crate::datatypes::api_stonk::{APIStonk, LocalApiStonk};
+use crate::datatypes::client::{Client, Clients};
 use crate::datatypes::stonk::SearchStonk;
-use crate::stonk_finder::stonk_finder::{find_stonk_by_company_name, get_stonk_history};
-use crate::{Client, Clients};
-use chrono::{TimeZone, Utc};
+use crate::stonk_finder::stonk_finder::{
+    find_stonk_by_company_name, get_latest_stonk, get_stonk_history,
+};
+
 use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
@@ -39,8 +41,7 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     println!("{} disconnected", uuid);
 }
 
-//TODO for Stefan:
-// - reduce complexity of client_msg
+
 async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
     println!("received message from {}: {:?}", client_id, msg);
     let message = match msg.to_str() {
@@ -60,9 +61,7 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                     //TODO support user specified start and end dates
                     _ if message.starts_with("stonk") => {
                         let stonk_name = message.split_ascii_whitespace().nth(1).unwrap();
-                        let start = Utc.ymd(2020, 1, 1).and_hms_milli(0, 0, 0, 0);
-                        let end = Utc.ymd(2020, 1, 31).and_hms_milli(23, 59, 59, 999);
-                        let stonk_history = match get_stonk_history(stonk_name, start, end).await {
+                        let stonk_history = match get_latest_stonk(stonk_name).await {
                             Ok(v) => v,
                             Err(e) => {
                                 println!("error getting stonk history: {}", e);
@@ -107,6 +106,7 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
     return;
 }
 
+//Handle objects sent from client
 async fn client_msg_objects(message: &str) -> Result<String, String> {
     match message {
         _ if serde_json::from_str::<APIStonk>(message).is_ok() => {

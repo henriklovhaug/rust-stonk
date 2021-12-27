@@ -1,11 +1,10 @@
 use std::{collections::HashMap, convert::Infallible, sync::Arc};
 use tokio::sync::Mutex;
-use warp::{Filter, Rejection};
+use warp::Filter;
 mod websocket;
 use crate::websocket::handlers;
-type Result<T> = std::result::Result<T, Rejection>;
 mod datatypes;
-use crate::datatypes::client::{Client, Clients};
+use crate::datatypes::client::Clients;
 mod stonk_finder;
 
 #[tokio::main]
