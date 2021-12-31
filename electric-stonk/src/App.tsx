@@ -1,7 +1,7 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Stonk } from './stonk';
+import { Stonk, ApiStonkNames } from './stonk';
 
 const ws = new WebSocket('ws://localhost:8000/ws');
 
@@ -16,37 +16,41 @@ function App() {
         adjclose: 0
     });
 
+    const [stonkNames, setStonkNames] = React.useState<ApiStonkNames[]>([]);
+
     ws.onmessage = function (event) {
-        //console.log("STONKUS " + event.data);
-        var json: Stonk[] = JSON.parse(event.data);
-        setStonk(json[0]);
+        try {
+            var my_object: ApiStonkNames[]  = JSON.parse(event.data);
+            setStonkNames(my_object);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
         <div className="App">
             <header className="App-header">
 
-                <button onClick={() => ws.send('stonk TSLA')}>Send</button>
+                <input placeholder="Search for a stock" onChange={event => ws.send("search " + event.target.value)} />
+                <ul>
+                    {stonkNames.map(stonkName => (
+                        <li>{stonkName.stonk_name}</li>
+                    ))}
+                </ul>
+
+                <button onClick={() => connect()}>Send</button>
                 {stonk.timestamp}
                 <TestClass verdi = "test"/>
                 <img src={logo} className="App-logo" alt="logo" />
                 <p>
                     Edit <code>src/App.tsx</code> and save to reload.
                 </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
             </header>
         </div>
     );
 }
 
-const TestClass: FunctionComponent<TestProps>  = ({verdi}) => {
+const TestClass: FC<TestProps>  = ({verdi}) => {
     return (
         <button>{verdi}</button>);
 }
@@ -55,10 +59,20 @@ interface TestProps {
     verdi: string;
 }
 
-ws.onopen = (event) => {
-  console.log('connected');
-  ws.send('hello');
-};
+// ws.onopen = (event) => {
+//   console.log('connected');
+//   ws.send('hello');
+// };
+
+function connect() {
+    ws.onclose = (event) => {
+        console.log('disconnected');
+    }
+    //recconect
+    ws.onopen = (event) => {
+        console.log('reconnected');
+    }
+}
 
 
 export default App;

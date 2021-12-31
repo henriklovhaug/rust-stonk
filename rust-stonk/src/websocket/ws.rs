@@ -76,7 +76,15 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                     }
 
                     _ if message.starts_with("search") => {
-                        let search_term = &message.split_ascii_whitespace().nth(1).unwrap();
+                        let search_term = match message.split_ascii_whitespace().nth(1) {
+                            Some(v) => v,
+                            None => {
+                                let _ = sender.send(Ok(Message::text(
+                                    "error: no search term provided",
+                                )));
+                                return;
+                            }
+                        };
                         let search_results = find_stonk_by_company_name(search_term).await;
                         let send_string: Vec<SearchStonk> = search_results
                             .iter()

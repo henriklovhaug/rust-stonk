@@ -8,3 +8,7 @@ export interface Stonk {
     volume: number;
     adjclose: number;
 }
+
+export interface ApiStonkNames {
+    stonk_name: string;
+}
