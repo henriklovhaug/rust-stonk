@@ -29,6 +29,8 @@ function MainPage() {
 
     return (
         <div className="MainPage">
+            <header className="MainPage-header">
+
                 <input placeholder="Search for a stock" onChange={event => ws.send("search " + event.target.value)} />
                 <ul className="stonk-list">
                     {stonkNames.map(stonkName => (
@@ -43,6 +45,7 @@ function MainPage() {
                 <p>
                     Edit <code>src/App.tsx</code> and save to reload.
                 </p> */}
+            </header>
         </div>
     );
 }
