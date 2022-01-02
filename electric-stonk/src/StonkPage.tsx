@@ -1,5 +1,6 @@
-import React, { FC, useEffect } from 'react';
-import { Stonk, ApiStonkNames } from './stonk';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Stonk } from './stonk';
 import "./StonkPage.css";
 
 var ws = new WebSocket('ws://localhost:8000/ws');
@@ -14,7 +15,11 @@ function StonkPage(stonk:Stonk) {
 
     return (
         <div className="stonk-page">
-            
+            <header className='stonk-page-header'>
+                <Link to={'/'}>
+                    <button>Back</button>
+                </Link>
+            </header>
 
         </div>
 

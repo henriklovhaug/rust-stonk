@@ -1,10 +1,8 @@
-import React, { FC, useEffect } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 import Main from './main';
 
 function App() {
-
 
     return (
         <div className="App">
@@ -18,19 +16,9 @@ function App() {
     );
 }
 
-const TestClass: FC<TestProps> = ({ verdi }) => {
-    return (
-        <button>{verdi}</button>);
-}
-
-interface TestProps {
-    verdi: string;
-}
-
 // ws.onopen = (event) => {
 //   console.log('connected');
 //   ws.send('hello');
 // };
-
 
 export default App;
