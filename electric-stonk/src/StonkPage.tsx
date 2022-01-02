@@ -35,7 +35,7 @@ function StonkPage() {
         }
     }
 
-    //Useeffect cleanup
+    //Memomry cleanup
     React.useEffect(() => {
         return () => {
             ws.close();
