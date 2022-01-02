@@ -26,7 +26,7 @@ pub async fn find_stonk_by_company_name(company_name: &str) -> Vec<YQuoteItem> {
     resp.quotes
 }
 
-pub async fn get_latest_stonk(stonk_name: &str) -> Result<Vec<Stonk>, Box<dyn std::error::Error>> {
+pub async fn get_latest_stonks(stonk_name: &str) -> Result<Vec<Stonk>, Box<dyn std::error::Error>> {
     let provider = yahoo::YahooConnector::new();
     let resp = provider
         .get_latest_quotes(stonk_name, "1m")
@@ -36,6 +36,14 @@ pub async fn get_latest_stonk(stonk_name: &str) -> Result<Vec<Stonk>, Box<dyn st
         .map(|quote| Stonk::from(quote))
         .collect();
     Ok(resp)
+}
+
+pub async fn get_last_stonk(stonk_name: &str) -> Result<Stonk, Box<dyn std::error::Error>> {
+    let provider = yahoo::YahooConnector::new();
+    let resp = provider.get_latest_quotes(stonk_name, "1m").await?;
+    let quote = resp.last_quote()?;
+    let stonk = Stonk::from(&quote);
+    Ok(stonk)
 }
 
 #[cfg(test)]

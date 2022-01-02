@@ -2,7 +2,7 @@ use crate::datatypes::api_stonk::{APIStonk, LocalApiStonk};
 use crate::datatypes::client::{Client, Clients};
 use crate::datatypes::stonk::SearchStonk;
 use crate::stonk_finder::stonk_finder::{
-    find_stonk_by_company_name, get_latest_stonk, get_stonk_history,
+    find_stonk_by_company_name, get_last_stonk, get_latest_stonks, get_stonk_history,
 };
 
 use futures::{FutureExt, StreamExt};
@@ -41,7 +41,6 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     println!("{} disconnected", uuid);
 }
 
-
 async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
     println!("received message from {}: {:?}", client_id, msg);
     let message = match msg.to_str() {
@@ -57,11 +56,9 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                         let _ = sender.send(Ok(Message::text("pong")));
                     }
 
-                    //Check if message starts with "stonk:"
-                    //TODO support user specified start and end dates
                     _ if message.starts_with("stonk") => {
                         let stonk_name = message.split_ascii_whitespace().nth(1).unwrap();
-                        let stonk_history = match get_latest_stonk(stonk_name).await {
+                        let stonk_history = match get_latest_stonks(stonk_name).await {
                             Ok(v) => v,
                             Err(e) => {
                                 println!("error getting stonk history: {}", e);
@@ -76,7 +73,14 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                     }
 
                     _ if message.starts_with("search") => {
-                        let search_term = &message.split_ascii_whitespace().nth(1).unwrap();
+                        let search_term = match message.split_ascii_whitespace().nth(1) {
+                            Some(v) => v,
+                            None => {
+                                let _ = sender
+                                    .send(Ok(Message::text("[]")));
+                                return;
+                            }
+                        };
                         let search_results = find_stonk_by_company_name(search_term).await;
                         let send_string: Vec<SearchStonk> = search_results
                             .iter()
@@ -84,6 +88,29 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                             .collect();
                         let _ = sender.send(Ok(Message::text(
                             serde_json::to_string(&send_string).unwrap(),
+                        )));
+                    }
+
+                    _ if message.starts_with("now") => {
+                        let stonk_name = match message.split_ascii_whitespace().nth(1) {
+                            Some(v) => v,
+                            None => {
+                                let _ =
+                                    sender.send(Ok(Message::text("error: no stonk name provided")));
+                                return;
+                            }
+                        };
+                        let stonk_history = match get_last_stonk(stonk_name).await {
+                            Ok(v) => v,
+                            Err(e) => {
+                                println!("error getting stonk history: {}", e);
+                                let _ =
+                                    sender.send(Ok(Message::text("error getting stonk history")));
+                                return;
+                            }
+                        };
+                        let _ = sender.send(Ok(Message::text(
+                            serde_json::to_string(&stonk_history).unwrap(),
                         )));
                     }
 
