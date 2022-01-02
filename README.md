@@ -1,9 +1,26 @@
 # rust-stonk
 
-## TODO's
+## Howto
 
-* Implement websocket
-* Implement TensorFlow
-* Electron app to controll frontend
-* Minor css changes
-* Handle errors, currently prays it don't panics
+### Backend
+
+``` bash
+cd rust-stonk/
+cargo run
+```
+
+### Frontend
+
+``` bash
+cd electric-stonk/
+npm install
+npm start
+```
+
+Alternatively to run as electron app
+
+``` bash
+cd electric-stonk/
+npm install
+npm run dev
+```
