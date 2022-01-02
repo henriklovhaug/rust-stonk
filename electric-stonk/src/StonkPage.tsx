@@ -35,6 +35,13 @@ function StonkPage() {
         }
     }
 
+    //Useeffect cleanup
+    React.useEffect(() => {
+        return () => {
+            ws.close();
+        }
+    }, []);
+
     return (
         <div className="stonk-page">
             <header className='stonk-page-header'>
