@@ -77,7 +77,7 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                             Some(v) => v,
                             None => {
                                 let _ = sender
-                                    .send(Ok(Message::text("error: no search term provided")));
+                                    .send(Ok(Message::text("[]")));
                                 return;
                             }
                         };
