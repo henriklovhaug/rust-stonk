@@ -33,8 +33,12 @@ function MainPage() {
 
                 <input placeholder="Search for a stock" onChange={event => ws.send("search " + event.target.value)} />
                 <ul className="stonk-list">
-                    {stonkNames.map(stonkName => (
-                        <li key={stonkName.stonk_name}>{stonkName.stonk_name}</li>
+                    {stonkNames.map(stonk => (
+                        <li key={stonk.stonk_name}>
+                            <Link to={'/stonk/' + stonk.stonk_name}>
+                                <button>{stonk.stonk_name}</button>
+                            </Link>
+                        </li>
                     ))}
                 </ul>
 
@@ -42,7 +46,7 @@ function MainPage() {
                 {/* {stonk.timestamp} */}
                 <TestClass verdi = "test"/>
 
-                <Link to={'/stonk'}>
+                <Link to={'/stonk/AAPL'}>
                     <button>Stonk</button>
                 </Link>
             </header>
