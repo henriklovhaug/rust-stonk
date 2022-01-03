@@ -1,20 +1,20 @@
-import React, { FC, useEffect } from 'react';
-import logo from './logo.svg';
+import React, { FC } from 'react';
+import { Link } from 'react-router-dom';
 import './MainPage.css';
-import { Stonk, ApiStonkNames } from './stonk';
+import { ApiStonkNames } from './stonk';
 
 const ws = new WebSocket('ws://localhost:8000/ws');
 
 function MainPage() {
-    const [stonk, setStonk] = React.useState<Stonk>({
-        timestamp: 0,
-        open: 0,
-        high: 0,
-        low: 0,
-        close: 0,
-        volume: 0,
-        adjclose: 0
-    });
+    // const [stonk, setStonk] = React.useState<Stonk>({
+    //     timestamp: 0,
+    //     open: 0,
+    //     high: 0,
+    //     low: 0,
+    //     close: 0,
+    //     volume: 0,
+    //     adjclose: 0
+    // });
 
     const [stonkNames, setStonkNames] = React.useState<ApiStonkNames[]>([]);
 
@@ -33,18 +33,22 @@ function MainPage() {
 
                 <input placeholder="Search for a stock" onChange={event => ws.send("search " + event.target.value)} />
                 <ul className="stonk-list">
-                    {stonkNames.map(stonkName => (
-                        <li key={stonkName.stonk_name}>{stonkName.stonk_name}</li>
+                    {stonkNames.map(stonk => (
+                        <li key={stonk.stonk_name}>
+                            <Link to={'/stonk/' + stonk.stonk_name}>
+                                <button>{stonk.stonk_name}</button>
+                            </Link>
+                        </li>
                     ))}
                 </ul>
 
                 <button onClick={() => connect()}>Send</button>
-                {stonk.timestamp}
+                {/* {stonk.timestamp} */}
                 <TestClass verdi = "test"/>
-                {/* <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reload.
-                </p> */}
+
+                <Link to={'/stonk/AAPL'}>
+                    <button>Stonk</button>
+                </Link>
             </header>
         </div>
     );
