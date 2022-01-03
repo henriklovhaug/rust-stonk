@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ApiStonkNames, Stonk } from './stonk';
+import { Stonk } from './stonk';
 import "./StonkPage.css";
 
 var ws = new WebSocket('ws://localhost:8000/ws');
