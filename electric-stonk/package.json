@@ -52,6 +52,8 @@
     "concurrently": "^6.5.1",
     "electron": "^16.0.5",
     "electron-packager": "^15.4.0",
+    "jest-websocket-mock": "^2.2.1",
+    "mock-socket": "^9.0.8",
     "wait-on": "^6.0.0"
   }
 }
